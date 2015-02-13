@@ -83,9 +83,29 @@ void ReadoutWorker::InitializeCrates( Modes::RunningModes theRunningMode )
       readoutChannels.insert(readoutChannels.end(),channels->begin(),channels->end());
     }
   } 
-  EnableIRQ();
+  switch(runningMode) {
+    case Modes::OneShot:
+    case Modes::NuMIBeam:
+      EnableIRQ();
+      break;
+    case Modes::Cosmics:
+      InterruptInitialize();
+      break;
+    case Modes::PureLightInjection:
+    case Modes::MixedBeamPedestal:
+    case Modes::MixedBeamLightInjection:
+    case Modes::MTBFBeamMuon:
+    case Modes::MTBFBeamOnly:
+      EnableIRQ();
+      break;
+    default:
+      readoutLogger.errorStream() << "InitializeCrates: Unknown running mode."<<runningMode;
+
+  } /* end switch(runningMode) */
+    
   readoutLogger.debugStream() << "Finished Crate Initialization for " << (*this);
-}
+} /* end InitializeCrates() */
+
 
 //---------------------------
 //! Get a pointer to the only Master CRIM between all readout crates.
@@ -365,5 +385,98 @@ std::tr1::shared_ptr<RunHeader> ReadoutWorker::GetRunHeader( HeaderData::BankTyp
   delete(frameHeader);
   return(runHeader);
 }
+
+/*
+12/10/2014 Geoff Savage
+Additions for running in "cosmics" mode.
+*/
+
+//---------------------------
+void ReadoutWorker::FastCommandFEBTriggerRearm() const {
+    for (std::vector<VMECrate*>::const_iterator p=crates.begin(); p!=crates.end(); ++p) 
+        (*p)->FastCommandFEBTriggerRearm();
+}
+
+//---------------------------
+// Reset the sequencer latch for the single v5 CRIM when running cosmics.
+void ReadoutWorker::ResetCosmicLatch() const
+{
+    readoutLogger.debugStream() << "Reset cosmic for master CRIM.";
+        this->MasterCRIM()->ResetCosmicLatch();
+}
+
+//---------------------------
+void ReadoutWorker::SendSoftwareRDFE() const {
+    for (std::vector<VMECrate*>::const_iterator p=crates.begin(); p!=crates.end(); ++p) 
+        (*p)->SendSoftwareRDFE();
+}
+ 
+//---------------------------
+void ReadoutWorker::InterruptInitialize() {
+  return this->MasterCRIM()->InterruptInitialize();
+}
+
+//---------------------------
+void ReadoutWorker::InterruptClear() const {
+  return this->MasterCRIM()->InterruptClear();
+}
+
+//---------------------------
+void ReadoutWorker::InterruptEnable() const {
+  return this->MasterCRIM()->InterruptEnable();
+}
+
+//---------------------------
+int ReadoutWorker::InterruptWait() const {
+  return this->MasterCRIM()->InterruptWait();
+}
+
+unsigned long long ReadoutWorker::TriggerCosmics( Triggers::TriggerType triggerType )
+{
+  readoutLogger.debugStream() << "TriggerCosmics: trigger type = " << triggerType;
+
+  using namespace Triggers;
+
+#ifndef GOFAST
+  readoutLogger.debugStream() << "TriggerCosmics: RDFE Counter begin = " << (*currentChannel)->ReadEventCounter();
+#endif
+
+  InterruptEnable();
+  ResetCosmicLatch();  // Start CRIM sequencer
+  InterruptClear();
+
+  switch (triggerType) {
+    case Pedestal:
+    case ChargeInjection:
+    case LightInjection:
+      this->MasterCRIM()->SendSoftwareGate(); 
+      break;
+    case Cosmic:
+    case NuMI:
+    case MTBFMuon:
+    case MTBFBeam:
+      break;
+    default:
+      readoutLogger.errorStream() << "TriggerCosmics: Unknown trigger type = " << triggerType;
+  }
+
+  if (!InterruptWait()) return 0;
+
+  if (!MicroSecondSleep(1200)) return 0;
+  
+  SendSoftwareRDFE();
+
+  if (!MicroSecondSleep(microSecondSleepDuration)) return 0;
+
+  this->WaitForSequencerReadoutCompletion();
+
+#ifndef GOFAST
+  readoutLogger.debugStream() << "TriggerCosmics: RDFE Counter end = " << (*currentChannel)->ReadEventCounter();
+#endif
+
+  FastCommandFEBTriggerRearm();
+
+  return GetNowInMicrosec();
+} /* end ReadoutWorker::TriggerCosmics() */
 
 #endif

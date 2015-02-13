@@ -998,7 +998,7 @@ ECROC * GetAndTestECROC( unsigned int address, Controller * controller )
   assert( ecroc->GetAddress() == address );
   // These methods are void. Not clear it makes sense to call all 
   // public CROCE methods since they're talking to the hardware.
-  ecroc->Initialize();
+  ecroc->Initialize( runningMode );
   ecroc->ClearAndResetStatusRegisters();
   ecroc->EnableSequencerReadout();
   ecroc->DisableSequencerReadout();

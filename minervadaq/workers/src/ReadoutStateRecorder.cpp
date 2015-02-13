@@ -113,6 +113,7 @@ Triggers::TriggerType ReadoutStateRecorder::GetNextTriggerType()
   switch (args->runMode) {
     case OneShot:
       triggerType = Pedestal;
+      //     usleep(50000); //0.05 second sleep 
 #ifndef MTEST
       sleep(1);
 #endif

@@ -18,14 +18,6 @@
 # 6. WHTESTSTAND - SLF5 DAQ and electronics development 
 #
 
-if [ $# -eq 1 ]; then
-  export LOCALE=$1
-fi
-if [ "$LOCALE" == "" ]; then
-  echo No default LOCALE defined!  Assigning your LOCALE to FNAL...
-  export LOCALE=FNAL
-fi
-
 echo ---------------------------------------------------------------------------
 echo Welcome to the MINERvA DAQ Software Environment.
 echo
@@ -79,8 +71,7 @@ elif [ $LOCALE == "NEARLINEDEV" ]; then
   # Add log4cpp support.
   export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/work/log4cpp/lib
 elif [ $LOCALE == "FNAL2" ]; then
-  #export LOCALE=MTEST
-  export DAQROOT=/work/software/croce_v3/minervadaq/minervadaq
+  export DAQROOT=/work/software/croce_mtest/minervadaq/minervadaq
   export CAEN_DIR=/work/software/CAENVMElib
   export CAEN_VERSION=CAEN_2_30
   export CODA_VERSION=et_9.0

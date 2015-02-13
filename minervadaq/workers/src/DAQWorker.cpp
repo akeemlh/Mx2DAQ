@@ -72,9 +72,10 @@ void DAQWorker::InitializeHardware()
 #if MTEST 
   readoutWorker->AddCrate(0);
   // readoutWorker->GetVMECrateVector(<Crate address>)->AddECROC( <Croce address>,  <number of FEBs in chain 0>,  < '' in chain 1>,  < '' in chain 2>,  < '' in chain 3> );
-  readoutWorker->GetVMECrateVector(0)->AddECROC( 1,  4,  5,  4,  4 );
-  readoutWorker->GetVMECrateVector(0)->AddECROC( 2,  0,  0,  0,  0 );
-  readoutWorker->GetVMECrateVector(0)->AddECROC( 3,  0,  0,  0,  0 );
+  // readoutWorker->GetVMECrateVector(0)->AddECROC( 2,  0,  0,  0,  4 );
+    readoutWorker->GetVMECrateVector(0)->AddECROC( 1,  5,  5,  0,  4 );
+    readoutWorker->GetVMECrateVector(0)->AddECROC( 2,  5,  4,  4,  4 );
+    readoutWorker->GetVMECrateVector(0)->AddECROC( 3,  5,  4,  3,  0 );
   readoutWorker->GetVMECrateVector(0)->AddCRIM( 224 );
 #endif
 
@@ -215,6 +216,7 @@ bool DAQWorker::ContactEventBuilder( EventHandler *handler )
     if (etstatus == ET_OK) {
       daqWorker.debugStream() << "Putting Event into ET System...";
       et_event_getdata(pe, (void **)&pdata); 
+/*
 #ifndef GOFAST
       { 
         daqWorker.debugStream() << "-----------------------------------------------";
@@ -226,6 +228,7 @@ bool DAQWorker::ContactEventBuilder( EventHandler *handler )
         }
       }
 #endif
+*/
       // TODO : statically sized EventHandler is typically far too big. Dynamic?
       memmove(pdata, handler, sizeof(struct EventHandler));
       et_event_setlength(pe, sizeof(struct EventHandler));
@@ -301,12 +304,28 @@ bool DAQWorker::BeginNextGate()
   unsigned long long triggerTime = 0;
   readoutWorker->ResetCurrentChannel();
   Triggers::TriggerType triggerType = stateRecorder->GetNextTriggerType();
-  triggerTime = readoutWorker->Trigger( triggerType );
+  switch(stateRecorder->GetRunMode()) {
+    case Modes::Cosmics:
+      triggerTime = readoutWorker->TriggerCosmics( triggerType );
+      break;
+    case Modes::OneShot:
+    case Modes::NuMIBeam:
+    case Modes::PureLightInjection:
+    case Modes::MixedBeamPedestal:
+    case Modes::MixedBeamLightInjection:
+    case Modes::MTBFBeamMuon:
+    case Modes::MTBFBeamOnly:
+      triggerTime = readoutWorker->Trigger( triggerType );
+      break;
+    default:
+      daqWorker.errorStream() << "BeginNextGate: Unknown running mode.";
+  } /* end switch(stateRecorder->GetRunMode())*/
+  
   if (0 == triggerTime) return false; // We were interrupted during the CRIM wait.
   stateRecorder->SetGateStartTime( triggerTime );
 
   return stateRecorder->BeginNextGate();
-}
+} /* end DAQWorker::BeginNextGate() */
 
 //---------------------------------------------------------
 //! Set the finish time; Get the MINOSSGATE; Call the ReadoutStateRecorder.

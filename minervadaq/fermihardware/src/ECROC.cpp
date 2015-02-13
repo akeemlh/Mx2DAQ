@@ -25,7 +25,7 @@ ECROC::ECROC(unsigned int address, const Controller* controller) :
   rdfePulseDelayAddress        = this->address + VMEModuleTypes::ECROCRdfePulseDelay;
   rdfePulseCommandAddress      = this->address + VMEModuleTypes::ECROCRdfePulseCommand;
 
-  ECROCLog.setPriority(log4cpp::Priority::INFO); 
+  ECROCLog.setPriority(log4cpp::Priority::DEBUG); 
 
   MakeChannels(); 
 }
@@ -138,11 +138,31 @@ void ECROC::SetupResetAndTestPulseRegister( unsigned short resetEnable, unsigned
 void ECROC::InitializeRegisters( VMEModuleTypes::ECROCClockModes clockMode, 
     unsigned short testPulseDelayValue,
     unsigned short testPulseDelayEnabled,
-    unsigned short sequencerDelayValue ) const
+    unsigned short sequencerDelayValue,
+    Modes::RunningModes runningMode) const
 {
+  using namespace Modes;
   SetupTimingRegister( clockMode, testPulseDelayEnabled, testPulseDelayValue );
   SetupResetAndTestPulseRegister( 0, 0 );
-  SequencerDelayEnable();
+  // 120/12/2014 Geoff Savage
+  // Turn off automatic RDFE for "cosmics" mode.
+  switch (runningMode) {
+    case Cosmics:
+      SequencerDelayDisable();
+      break;
+    case OneShot:
+    case NuMIBeam:
+    case PureLightInjection:
+    case MixedBeamPedestal:
+    case MixedBeamLightInjection:
+    case MTBFBeamMuon:
+    case MTBFBeamOnly:
+      SequencerDelayEnable();
+      break;
+    default:
+      ECROCLog.fatalStream() << "InitializeRegisters: No Running Mode defined!";
+      exit(EXIT_CONFIG_ERROR);
+  }
   SetSequencerDelayValue( (sequencerDelayValue&0x01FF) ); // steps of 2.411 microseconds
 }
 
@@ -211,6 +231,10 @@ void ECROC::UseSinglePipelineReadout() const
 //----------------------------------------
 void ECROC::SendSoftwareRDFE() const
 {
+#ifndef GOFAST
+  ECROCLog.debugStream() << "SendSoftwareRDFE"; 
+#endif
+
   unsigned char command[] = {0x1F};
   int error = WriteCycle(1, command, rdfePulseCommandAddress, addressModifier, dataWidthReg );
   if( error ) throwIfError( error, "Failure writing to CROC Software RDFE Register!");
@@ -226,7 +250,7 @@ void ECROC::WaitForSequencerReadoutCompletion() const
 }
 
 //----------------------------------------
-void ECROC::Initialize() const
+void ECROC::Initialize(Modes::RunningModes runningMode) const
 {
   ECROCLog.infoStream() << "Initializing ECROC 0x" << std::hex << this->address;
   unsigned short testPulseDelayEnabled = 0;  // we do not use the test pulse delay in data-taking
@@ -235,7 +259,8 @@ void ECROC::Initialize() const
   this->ClearAndResetStatusRegisters();
   this->EnableSequencerReadout();
   this->InitializeRegisters( (VMEModuleTypes::ECROCClockModes)VMEModuleTypes::ECROCExternal, 
-      testPulseDelayEnabled, testPulseDelayValue, sequencerDelayValue );
+      testPulseDelayEnabled, testPulseDelayValue, sequencerDelayValue,
+      runningMode );
 }
 
 //----------------------------------------
@@ -310,6 +335,20 @@ void ECROC::SetSequencerDelayValue( unsigned short delay ) const
     << " target value = 0x" << std::hex << configuration;
 #endif
   this->SetSequencerDelayeRegister( configuration );
+}
+
+/*
+12/10/2014 Geoff Savage
+Additions for running in "cosmics" mode.
+*/
+
+void ECROC::FastCommandFEBTriggerRearm() const {
+  unsigned char command[] = {0x85};
+  int error = WriteCycle(1, command, fastCommandAddress, addressModifier, dataWidthReg );
+  if( error ) throwIfError( error, "Failure writing to CROC FastCommand Register! For Trigger Rearm.");
+#ifndef GOFAST
+  ECROCLog.debugStream() << " FEB Trigger rearm fast command issued.";
+#endif
 }
 
 
