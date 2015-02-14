@@ -2,6 +2,10 @@
 #define ReadoutWorker_cxx
 /*! \file ReadoutWorker.cpp
 */
+/*
+02/13/2015 Geoff Savage
+See the bottom of this file for code added to run in cosmics mode.
+*/
 
 #include "ReadoutWorker.h"
 #include "FrameHeader.h"
@@ -427,8 +431,16 @@ void ReadoutWorker::InterruptEnable() const {
 }
 
 //---------------------------
+/* WaitForIRQ has a timeout.  Triggers from cosmic rays
+might exceed this timeout value.
+The status variable is set to false when a SIGTERM or SIGINT is caught which
+indicates the minervadaq should terminate. 
+*/
 int ReadoutWorker::InterruptWait() const {
-  return this->MasterCRIM()->InterruptWait();
+  readoutLogger.debugStream() << "InterruptWait: Wait for IRQ for master CRIM.";
+  int success = this->MasterCRIM()->InterruptWait( status );
+  if (0 == success) return true;
+  return false;
 }
 
 unsigned long long ReadoutWorker::TriggerCosmics( Triggers::TriggerType triggerType )

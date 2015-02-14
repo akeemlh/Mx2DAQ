@@ -121,7 +121,7 @@ class CRIM : public VMECommunicator {
     void InterruptInitialize();
     void InterruptClear() const;
     void InterruptEnable() const;
-    int InterruptWait() const;
+    int InterruptWait( const sig_atomic_t * status ) const;
     void InterruptShow() const;
 };
 

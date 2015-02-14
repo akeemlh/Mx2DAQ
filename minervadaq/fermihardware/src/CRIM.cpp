@@ -624,17 +624,26 @@ void CRIM::InterruptEnable() const {
 
 } /* end CRIM::InterruptEnable() */
 
-int CRIM::InterruptWait() const {
-    unsigned short status = 0;
-    
-    while (!status) {
-        status = GetInterruptStatus() & irqLine;
-    }
+int CRIM::InterruptWait( const sig_atomic_t * status ) const
+{
+  int success = 0;
 #ifndef GOFAST
-    CRIMLog.infoStream() << "InterruptWait: InterruptShow()";
-    InterruptShow();
+  CRIMLog.debugStream() << "Entering CRIM::InterruptWait: IRQLevel = " << this->irqLevel;
 #endif
-  return status;
+
+  // VME manip.
+  unsigned short interruptStatus = 0;
+  unsigned short iline = (unsigned short)this->irqLine;
+  CRIMLog.debugStream() << "InterruptWait: Interrupt line = " << iline;
+
+  while ( !( interruptStatus & iline ) ) {
+    if ( /* !continueFlag */ !(*status) ) {
+      CRIMLog.debugStream() << "InterrruptWait: Exit signal caught. Bail out.";
+      return 1;
+    }
+    interruptStatus = this->GetInterruptStatus();
+  }
+  return success;
 
 } /* end CRIM::InterruptWait() */
 
