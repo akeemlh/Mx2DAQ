@@ -803,7 +803,7 @@ void FPGASetupForChargeInjection( EChannels* channel, int boardID )
       // try to get hits in different windows (need ~35+ ticks) 
       int tickOffset = 40;//40;
       //std::cout << "boardID = " << boardID << std::endl;
-      unsigned char inj[] = { 1 + (unsigned char)i*(tickOffset) + 2*((int)boardID) };
+      unsigned char inj[] = {static_cast<unsigned char>(1 + (unsigned char)i*(tickOffset) + 2*((int)boardID))};
       unsigned char enable[] = {0x1};
       frame->SetInjectCount(inj,i);
       frame->SetInjectEnable(enable,i);
@@ -902,7 +902,7 @@ void FPGASetupForGeneric( EChannels* channel, int boardID )
     unsigned char previewEnable[] = {0x0};
     frame->SetPreviewEnable(previewEnable);
     for (int i=0; i<4; i++) {
-      unsigned char inj[] = { 1 + (unsigned char)i*(2) + 2*((int)boardID) };
+      unsigned char inj[] = {static_cast<unsigned char>(1 + (unsigned char)i*(2) + 2*((int)boardID))};
       unsigned char enable[] = {0x0};
       frame->SetInjectCount(inj,i);
       frame->SetInjectEnable(enable,i);

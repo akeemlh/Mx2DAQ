@@ -1,4 +1,4 @@
-This file is current as of 2013.March.19 - GNP
+This file is current as of Sep 29 2023 - ALH
 
 How to Build the MINERvA DAQ.
 -----------------------------
@@ -43,22 +43,25 @@ total 304K
 
 Complete Directions (no software installed):
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-To build the MINERvA Production DAQ (mnvdaq) you need to first install and build CAEN driver libraries 
-to interface with the CAEN v2718 VME Controller and a2818 PCI Interface Card.  These drivers are available
-on the CAEN website (http://www.caen.it/nuclear/index.php) and specific drivers for SLF4.6 and SLF5.3 have 
-been stored on the MINERvA Plone (https://plone3.fnal.gov/P0/Minerva).  Note that the drivers for SLF4.6 
-must be patched (the patch is stored on the MINERvA Plone).  
+Before building the Mx2 DAQ you need to install the various required prerequisites. On Alma Linux 9 this 
+can be done in one line with: 
+`sudo dnf -y install wget tar nano git krb5-workstation krb5-libs libusb libusbx epel-release
+libudev-devel bzip2 gcc-c++ glibc cmake sqlite-devel && sudo dnf -y install log4cpp-devel`
 
-The most recent CAENlib version as of 2009.December.30 is 2.11, but we currently choose to use 2.7 due to 
-some slightly funny bugs with 2.11.  Migration to 2.11 or 2.12 when it becomes available should be 
-investigated.  The 2.7 version of the drivers is available with the DAQ in the misc/support directory.
+Then you will need to checkout the minervadaq code. Go to the location you'd like to checkout the 
+minervadaq code to and make sure you have a valid kerberos ticket, then run;
+`git clone ssh://p-minervadaq@cdcvs.fnal.gov/cvs/projects/minervadaq`
 
-Store the CAEN libraries in a directory named ${WORKROOT}/CAENVMElib/lib, where $WORKROOT is a directory 
-of your choosing.  If you attempt to install the CAEN drivers by untarring the packages and following the 
-contained instructions in $WORKROOT you will end up with the correct structure for the 2.11 version of the
-libraries.  v2.7 requires some fiddling to get things clean afterwards because the packages also contains 
-the libraries for Windows.  Note that even if you do not intend to run the DAQ for acquisition, you still 
-need the CAEN libraries to build the code.
+To build the MINERvA Production DAQ (mnvdaq) you need to install and build CAEN driver libraries 
+to interface with the CAEN v2718 VME Controller and a2818 PCI Interface Card as well as the CAENVME library,
+CAENVMELib. These are available on the CAEN website (http://www.caen.it/nuclear/index.php). The  most recent
+CAENlib version as of September 29th 2023 is 3.4.4, a zip of this is available at 
+misc/support/CAENVMELib-v3.4.4.tgz. The latest driver for the A2818 bridge (as of the writing of this 
+document) is available at misc/support/A2818Drv-1.24.tar
+
+Extract CAENVMELib-v3.4.4.tgz to ${DAQROOT}/CAENVMELib, then run the appropriate installation script within
+${DAQROOT}/CAENVMELib/lib to install CAENVMELib. Note that even if you do not intend to run the DAQ for 
+acquisition, you still need the CAEN libraries to build the code.
 
 Note: It is worth mentioning that the drivers are set up a bit funny on the default DAQ machines.  We used 
 the x86_64 version of the library, but ran the regular install script (which put the libraries in /usr/lib 
@@ -66,15 +69,11 @@ instead of /usr/lib64 as is technically proper).  The Makefiles for the DAQ refl
 the CAEN libraries in the "correct" directory (/usr/lib64), you will need to also modify the default 
 Makefiles in order to get the DAQ to build.
 
-Once the CAEN libraries are installed, go to $WORKROOT and create a mnvonline/ directory to hold the DAQ 
-and (eventually) SlowControl code.  Within mnvonline/ run a CVS checkout on the package mnvdaq.  Make sure 
-you have the following environment variables set and a valid kerberos ticket to access the MINERvA Git 
-repository:
-  git clone ssh://p-minervadaq@cdcvs.fnal.gov/cvs/projects/minervadaq
-
-Inside the mnvdaq/ directory you will find a setup script.  It is a good idea to read this script 
-carefully before proceeding.  The "location" is set by a $LOCALE environment variable.  Set your own $LOCALE 
-variable or mimic the directory structure of another $LOCALE and use that value for your own $LOCALE.  
+Inside the mnvdaq/ directory you will find a setup script, setupdaqenv.sh. It is a good idea to read this 
+script  carefully before proceeding.  The "location" is set by a $LOCALE environment variable. For Mx2 
+development and testing run setupMx2.sh to set your locale and run the setupdaqenv setup. You can also set
+your own $LOCALE variable or mimic the directory structure of another $LOCALE and use that value for your
+own $LOCALE.
 
 As of 2010.July.14, the set-up scripts and run scripts are tuned in a fairly inflexible way for 
 operation on Fermilab machines, set by hostnames in the options/ directory set of Make.options files.  
@@ -91,9 +90,11 @@ Once you have configured your setup scripts, build the DAQ with the following st
 2) source setupdaqenv.sh. You will likely want to source the included setup.sh first if you want to 
   use the more modern version of ET.
 
-3) Now build ET.  Go to the et_9.0 directory and type "gmake install".
-  Someday we will use et_12 (but not yet!). When we do, go to the et_12 directory 
-  and read the included README.MINERVA.
+3) Now build ET.  Go to the et_16.5 directory and follow the build instructions in README.md
+  Either SCons or CMake can be used.
+  E.g to use cmake: type
+  `mkdir build && cd build && cmake –DCMAKE_BUILD_TYPE=Release ..
+  make`
 
 4) MINERvA DAQ uses the following set of ports:
 	1090 : Queen-Soldier port (on Soldier)
@@ -104,18 +105,13 @@ It is a good idea to configure your firewall such that these ports are kept open
 
 5) Check ${ET_LIBROOT}/lib and make sure you have libet.a, libet_remote.so, and libet.so.
 
-6) Go to sqlite/sqlite-autoconf-3071600/
-  ./configure --prefix=${DAQROOT}/sqlite
-  make
-  make install
-
-7) Be sure that version of sqlite is what is in your $PATH and $LD_LIBRARY_PATH.
+6) Be sure that version of sqlite is what is in your $PATH and $LD_LIBRARY_PATH.
   (setupdaqenv.sh does this) 
 
-8) Return to $DAQROOT and run the compiler.sh script. (Make sure you have the right 
+7) Return to $DAQROOT and run the compiler.sh script. (Make sure you have the right 
   files in the options directory.)
 
-9) Check ${DAQROOT}/bin/ for 
+8) Check ${DAQROOT}/bin/ for 
 	event_builder
 	minervadaq
   tests
@@ -124,10 +120,10 @@ And check ${DAQROOT}/lib/ for
 	libhardware.so
 	libminerva_workers.so
 
-10) If you are missing any of these, read the Makefile and try building each package one at a time and check 
+9) If you are missing any of these, read the Makefile and try building each package one at a time and check 
 for errors.  Most likely, an environment variable has been incorrectly set.
 
-11) Finally, build the doxygen documentation:
+10) Finally, build the doxygen documentation:
   doxygen Doxyfile
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

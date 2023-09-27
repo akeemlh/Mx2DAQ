@@ -112,15 +112,19 @@ Triggers::TriggerType ReadoutStateRecorder::GetNextTriggerType()
   triggerType = UnknownTrigger;
   switch (args->runMode) {
     case OneShot:
+    {
       triggerType = Pedestal;
 //Sleep for 1 s.
 #ifndef MTEST
-      sleep(1); 
+      struct timespec remaining, request = { 1, 0 };
+      nanosleep(&request, &remaining);
 //      sleep(0.5); 
 #endif
       stateRecorderLogger.debugStream() << " Running Mode is OneShot.";
       break;
+    }
     case NuMIBeam:
+    {
       triggerType = NuMI;
       stateRecorderLogger.debugStream() << " Running Mode is NuMI Beam.";
       break;
@@ -128,35 +132,49 @@ Triggers::TriggerType ReadoutStateRecorder::GetNextTriggerType()
       triggerType = LightInjection;
 //Sleep for 1 s.
 #ifndef MTEST
-      sleep(1);
+  struct timespec remaining, request = { 1, 0 };
+  nanosleep(&request, &remaining);
 //      sleep(0.5); 
 #endif
       stateRecorderLogger.debugStream() << " Running Mode is PureLightInjection.";
       break;
+    }
     case MixedBeamPedestal:
+    {
       triggerType = NuMI;
       if (1 == gate % 2 ) triggerType = Pedestal;
       stateRecorderLogger.debugStream() << " Running Mode is MixedBeamPedestal.";
       break;
+    }
     case MixedBeamLightInjection:
+    {
       triggerType = NuMI;
       if (1 == gate % 2 ) triggerType = LightInjection;
       stateRecorderLogger.debugStream() << " Running Mode is MixedBeamLightInjection.";
       break;
+    }
     case Cosmics:
+    {
       triggerType = Cosmic;
       stateRecorderLogger.debugStream() << " Running Mode is Cosmic.";
       break;
+    }
     case MTBFBeamMuon:
+    {
       triggerType = MTBFMuon;
       stateRecorderLogger.debugStream() << " Running Mode is MTBFBeamMuon.";
       break;
+    }
     case MTBFBeamOnly:
+    {
       triggerType = MTBFBeam;
       stateRecorderLogger.debugStream() << " Running Mode is MTBFBeamOnly.";
       break;
+    }
     default:
+    {
       stateRecorderLogger.critStream() << "Error in ReadoutWorker::logRunningMode()! Undefined Running Mode!";
+    }
   }
   stateRecorderLogger.debugStream() << (*this);
   return triggerType;

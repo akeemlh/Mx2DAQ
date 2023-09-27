@@ -124,8 +124,9 @@ int Controller::Initialize()
 #endif
 
   try {
-    error = CAENVME_Init(controllerType, (unsigned short)pciSlotNumber, 
-	(unsigned short)boardNumber, &handle); 
+    uint32_t PID = (uint32_t)pciSlotNumber;
+    error = CAENVME_Init2(controllerType, &PID, 
+	(unsigned short)boardNumber, &handle);
     if (error) throw error;
   } catch (int e) {
     ReportError(e);

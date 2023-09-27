@@ -135,7 +135,7 @@ bool LVDSFrame::CheckForErrors()
     EndHeader, MaxLen, SecondStart, NAHeader }; 
 
   for (unsigned int i = 0; i < nflags; ++i) {
-    if (!receivedMessage[ bytes[i] ] & flags[i]) {
+    if ((!receivedMessage[ bytes[i] ]) & flags[i]) {
       error = true;
       lvdsLog.errorStream() << "HeaderError for byte: " << bytes[i] 
         << "; and flag : " << flags[i]

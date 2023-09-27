@@ -111,7 +111,7 @@ void ECROC::SetupTimingRegister( VMEModuleTypes::ECROCClockModes clockMode,
 #ifndef GOFAST
   ECROCLog.debugStream() << " Timing Register Message = 0x" << std::hex << timingRegisterMessage; 
 #endif
-  unsigned char command[] = { timingRegisterMessage & 0xFF, (timingRegisterMessage & 0xFF00)>>8 }; 
+  unsigned char command[] = { static_cast<unsigned char>(timingRegisterMessage & 0xFF), static_cast<unsigned char>((timingRegisterMessage & 0xFF00)>>8) }; 
 #ifndef GOFAST
   ECROCLog.debugStream() << " Timing Register Bytes   = 0x" << std::hex << (int)command[0] << ", 0x" << (int)command[1]; 
 #endif
@@ -127,7 +127,7 @@ void ECROC::SetupResetAndTestPulseRegister( unsigned short resetEnable, unsigned
 #ifndef GOFAST
   ECROCLog.debugStream() << " Reset and Test Pulse Register Message = 0x" << std::hex << resetAndTestPulseMaskRegisterMessage; 
 #endif
-  unsigned char command[] = { resetAndTestPulseMaskRegisterMessage & 0xFF, (resetAndTestPulseMaskRegisterMessage & 0xFF00)>>8 }; 
+  unsigned char command[] = { static_cast<unsigned char>(resetAndTestPulseMaskRegisterMessage & 0xFF), static_cast<unsigned char>((resetAndTestPulseMaskRegisterMessage & 0xFF00)>>8) }; 
 #ifndef GOFAST
   ECROCLog.debugStream() << " Reset and Test Pulse Register Bytes   = 0x" << std::hex << (int)command[0] << ", 0x" << (int)command[1]; 
 #endif
