@@ -70,11 +70,22 @@ void DAQWorker::InitializeHardware()
   // Read in hardware config here. For now, hard code...
 
 #if MTEST 
-  readoutWorker->AddCrate(0);
   // readoutWorker->GetVMECrateVector(<Crate address>)->AddECROC( <Croce address>,  <number of FEBs in chain 0>,  < '' in chain 1>,  < '' in chain 2>,  < '' in chain 3> );
-  readoutWorker->GetVMECrateVector(0)->AddECROC( 1,  4,  5,  4,  4 );
-  readoutWorker->GetVMECrateVector(0)->AddECROC( 2,  0,  0,  0,  0 );
-  readoutWorker->GetVMECrateVector(0)->AddECROC( 3,  0,  0,  0,  0 );
+//  readoutWorker->AddCrate(0);
+//  readoutWorker->AddCrate(1);// Added new crate -- Nur 08/26/2016
+//  readoutWorker->GetVMECrateVector(0)->AddECROC( 1,  10,  5,  0,  0 ); // Modified CROCE name -- Nur 08/29/2016
+//  readoutWorker->GetVMECrateVector(1)->AddECROC( 3,  5,  5,  0,  0 ); // Modified CROCE name -- Nur 08/29/2016
+//  readoutWorker->GetVMECrateVector(0)->AddCRIM( 224 );
+//  readoutWorker->GetVMECrateVector(1)->AddCRIM( 232 );
+//  readoutWorker->GetVMECrateVector(0)->AddECROC( 3,  5,  5,  0,  0 ); // Switching crates -- Nur 09/02/2016
+//  readoutWorker->GetVMECrateVector(1)->AddECROC( 1,  10,  5,  0,  0 ); // Switching crates -- Nur 09/02/2016
+//  readoutWorker->GetVMECrateVector(0)->AddCRIM( 232 );
+//  readoutWorker->GetVMECrateVector(1)->AddCRIM( 224 );
+  readoutWorker->AddCrate(0);
+//  readoutWorker->GetVMECrateVector(0)->AddECROC( 6,  0,  0,  1,  0 ); // Modified CROCE name -- Nur 08/29/2016
+//  readoutWorker->GetVMECrateVector(0)->AddECROC( 1,  10,  5,  0,  0 ); 
+  readoutWorker->GetVMECrateVector(0)->AddECROC( 1,  10,  5,  5,  5 );  // Added more FEBs -- Nur 07/201/2017
+  readoutWorker->GetVMECrateVector(0)->AddECROC( 2,  0,  0,  0,  0 ); 
   readoutWorker->GetVMECrateVector(0)->AddCRIM( 224 );
 #endif
 
@@ -89,55 +100,38 @@ void DAQWorker::InitializeHardware()
   readoutWorker->GetVMECrateVector(0)->AddCRIM( 224 );
 #endif
 #if NUMI
+
   readoutWorker->AddCrate(0);
-  readoutWorker->AddCrate(1);
-  readoutWorker->GetVMECrateVector(0)->AddECROC( 1, 10, 10, 10,  6 );
-  readoutWorker->GetVMECrateVector(0)->AddECROC( 2, 10, 10,  9,  5 );
-//  readoutWorker->GetVMECrateVector(0)->AddECROC( 2, 10, 10,  9,  0 );
-//  readoutWorker->GetVMECrateVector(0)->AddECROC( 2, 10, 0,  9,  5 );
-  readoutWorker->GetVMECrateVector(0)->AddECROC( 3, 10, 10, 10, 10 );
+  readoutWorker->GetVMECrateVector(0)->AddECROC( 1,  10, 10, 10, 10 );
+  readoutWorker->GetVMECrateVector(0)->AddECROC( 2,  9,  9,  9,  9 );
+  readoutWorker->GetVMECrateVector(0)->AddECROC( 3,  10, 10, 10, 10 );
   readoutWorker->GetVMECrateVector(0)->AddECROC( 4,  9,  9,  9,  9 );
-  readoutWorker->GetVMECrateVector(0)->AddECROC( 5, 10, 10, 10, 10 );
-  readoutWorker->GetVMECrateVector(0)->AddECROC( 6,  9,  9,  9,  9 );
-  readoutWorker->GetVMECrateVector(0)->AddECROC( 7, 10, 10, 10, 10 );
-  readoutWorker->GetVMECrateVector(0)->AddECROC( 8,  9,  9,  9,  9 );
-  readoutWorker->GetVMECrateVector(1)->AddECROC( 1, 10, 10, 10, 10 );
-  readoutWorker->GetVMECrateVector(1)->AddECROC( 2,  9,  9,  9,  0 );
-  readoutWorker->GetVMECrateVector(1)->AddECROC( 3, 10, 10,  6,  6 );
-  readoutWorker->GetVMECrateVector(1)->AddECROC( 4,  9,  9,  5,  5 );
-  readoutWorker->GetVMECrateVector(1)->AddECROC( 5,  6,  6,  6,  2 );
-  readoutWorker->GetVMECrateVector(1)->AddECROC( 6,  5,  5,  5,  9 );
-//  readoutWorker->GetVMECrateVector(1)->AddECROC( 6,  0,  5,  5,  0 );
-  readoutWorker->GetVMECrateVector(1)->AddECROC( 7, 10, 10, 10, 10 );
-  // readoutWorker->GetVMECrateVector(1)->AddECROC( 7, 10, 10, 1, 10 );
+  readoutWorker->GetVMECrateVector(0)->AddECROC( 5,  6,  6,  6,  0 );
+  readoutWorker->GetVMECrateVector(0)->AddECROC( 6,  5,  5,  5,  0 );
   readoutWorker->GetVMECrateVector(0)->AddCRIM( 224 );
   readoutWorker->GetVMECrateVector(0)->AddCRIM( 240 );
-  readoutWorker->GetVMECrateVector(1)->AddCRIM( 224 );
-  readoutWorker->GetVMECrateVector(1)->AddCRIM( 240 );
-  // Swap crate 0 and crate 1 readout order.  Nur, Geoff 10/06/2015
-  // readoutWorker->AddCrate(1);
-  // readoutWorker->AddCrate(0);
-  // readoutWorker->GetVMECrateVector(0)->AddECROC( 1, 10, 10, 10, 10 );
-  // readoutWorker->GetVMECrateVector(0)->AddECROC( 2,  9,  9,  9,  9 );
-  // readoutWorker->GetVMECrateVector(0)->AddECROC( 3, 10, 10,  6,  6 );
-  // readoutWorker->GetVMECrateVector(0)->AddECROC( 4,  9,  9,  5,  5 );
-  // readoutWorker->GetVMECrateVector(0)->AddECROC( 5,  6,  6,  6,  2 );
-  // readoutWorker->GetVMECrateVector(0)->AddECROC( 6,  5,  5,  5,  0 );
-  // readoutWorker->GetVMECrateVector(0)->AddECROC( 7, 10, 10, 10, 10 );
-  // readoutWorker->GetVMECrateVector(1)->AddECROC( 1, 10, 10, 10,  6 );
-  // // readoutWorker->GetVMECrateVector(1)->AddECROC( 1, 10, 10,  0,  6 );
-  // // readoutWorker->GetVMECrateVector(1)->AddECROC( 2, 10, 10,  9,  5 );
-  // readoutWorker->GetVMECrateVector(1)->AddECROC( 2,  0,  0,  9,  5 );
-  // readoutWorker->GetVMECrateVector(1)->AddECROC( 3, 10, 10, 10, 10 );
-  // readoutWorker->GetVMECrateVector(1)->AddECROC( 4,  9,  9,  9,  9 );
-  // readoutWorker->GetVMECrateVector(1)->AddECROC( 5, 10, 10, 10, 10 );
-  // readoutWorker->GetVMECrateVector(1)->AddECROC( 6,  9,  9,  9,  9 );
-  // readoutWorker->GetVMECrateVector(1)->AddECROC( 7, 10, 10, 10, 10 );
-  // readoutWorker->GetVMECrateVector(1)->AddECROC( 8,  9,  9,  9,  9 );
-  // readoutWorker->GetVMECrateVector(1)->AddCRIM( 224 );
-  // readoutWorker->GetVMECrateVector(1)->AddCRIM( 240 );
-  // readoutWorker->GetVMECrateVector(0)->AddCRIM( 224 );
-  // readoutWorker->GetVMECrateVector(0)->AddCRIM( 240 );
+
+//   readoutWorker->AddCrate(0);
+//   readoutWorker->AddCrate(1);
+//   readoutWorker->GetVMECrateVector(0)->AddECROC( 1, 10, 10, 10,  6 );
+//   readoutWorker->GetVMECrateVector(0)->AddECROC( 2, 10, 10,  9,  5 );
+//   readoutWorker->GetVMECrateVector(0)->AddECROC( 3, 10, 10, 10, 10 );
+//   readoutWorker->GetVMECrateVector(0)->AddECROC( 4,  9,  9,  9,  9 );
+//   readoutWorker->GetVMECrateVector(0)->AddECROC( 5, 10, 10, 10, 10 );
+//   readoutWorker->GetVMECrateVector(0)->AddECROC( 6,  9,  9,  9,  9 );
+//   readoutWorker->GetVMECrateVector(0)->AddECROC( 7, 10, 10, 10, 10 );
+//   readoutWorker->GetVMECrateVector(0)->AddECROC( 8,  9,  9,  9,  9 );
+//   readoutWorker->GetVMECrateVector(1)->AddECROC( 1, 10, 10, 10, 10 );
+//   readoutWorker->GetVMECrateVector(1)->AddECROC( 2,  9,  9,  9,  9 );
+//   readoutWorker->GetVMECrateVector(1)->AddECROC( 3, 10, 10,  6,  6 );
+//   readoutWorker->GetVMECrateVector(1)->AddECROC( 4,  9,  9,  5,  5 );
+//   readoutWorker->GetVMECrateVector(1)->AddECROC( 5,  6,  6,  6,  2 );
+//   readoutWorker->GetVMECrateVector(1)->AddECROC( 6,  5,  5,  5,  0 );
+//   readoutWorker->GetVMECrateVector(1)->AddECROC( 7, 10, 10, 10, 10 );
+//   readoutWorker->GetVMECrateVector(0)->AddCRIM( 224 );
+//   readoutWorker->GetVMECrateVector(0)->AddCRIM( 240 );
+//   readoutWorker->GetVMECrateVector(1)->AddCRIM( 224 );
+//   readoutWorker->GetVMECrateVector(1)->AddCRIM( 240 );
 #endif
   //printf("\n in DAQWorker :calling InitializeCrates \n");
   readoutWorker->InitializeCrates( args->runMode );
@@ -146,6 +140,7 @@ void DAQWorker::InitializeHardware()
 //---------------------------------------------------------
 void DAQWorker::CleanupHardware()
 {
+  daqWorker.infoStream() << "Cleaning up hardware..."; //SMEDLEY 3/9/2023
   readoutWorker->CleanupHardware();
 }
 
@@ -197,7 +192,7 @@ int DAQWorker::SetUpET()
     return etattstat;
   } 
   daqWorker.infoStream() << "Successfully attached to GRANDCENTRAL Station.";        
-
+  
   return 0;
 }
 
@@ -212,7 +207,7 @@ bool DAQWorker::ContactEventBuilder( EventHandler *handler )
   daqWorker.debugStream() << "EventHandler dataLength = " << length;
 
   while (et_alive(sys_id)) {
-    daqWorker.debugStream() << "  ->ET is Alive!";
+    daqWorker.debugStream() << "  ContactEventBuilder ->ET is Alive!";
     et_event *pe;         
     EventHandler *pdata;  
     int etstatus = et_event_new(sys_id, attach, &pe, ET_SLEEP, NULL,
@@ -243,6 +238,7 @@ bool DAQWorker::ContactEventBuilder( EventHandler *handler )
     if (etstatus == ET_OK) {
       daqWorker.debugStream() << "Putting Event into ET System...";
       et_event_getdata(pe, (void **)&pdata); 
+/*
 #ifndef GOFAST
       { 
         daqWorker.debugStream() << "-----------------------------------------------";
@@ -254,6 +250,7 @@ bool DAQWorker::ContactEventBuilder( EventHandler *handler )
         }
       }
 #endif
+*/
       // TODO : statically sized EventHandler is typically far too big. Dynamic?
       memmove(pdata, handler, sizeof(struct EventHandler));
       et_event_setlength(pe, sizeof(struct EventHandler));
@@ -281,6 +278,13 @@ bool DAQWorker::CloseDownET()
   daqWorker.infoStream() << "Closing down ET...";
   if (!declareEventsToET) return true;
 
+  if (et_alive(sys_id)) {
+    daqWorker.debugStream() << "CloseDownET  ->ET is Alive!";
+  } else {
+    daqWorker.debugStream() << "CloseDownET  ->ET is Dead!";
+  }
+
+  daqWorker.infoStream() << "Calling et_station_detach(sys_id, attach)..."; //SMEDLEY 3/9/23 Take 2
   if (et_station_detach(sys_id, attach) < 0) {
     daqWorker.fatal("et_producer: error in station detach\n");
     return false;
@@ -293,17 +297,18 @@ bool DAQWorker::CloseDownET()
 //! While the next gate condition is valid, read all EChannels.
 void DAQWorker::TakeData()
 {
-  daqWorker.infoStream() << "Beginning Data Acquisition...";
+  daqWorker.infoStream() << "TakeData: Beginning Data Acquisition...";
 
   DeclareRunHeaderToET();
   while ( BeginNextGate() ) {
 
     do {
       unsigned int blockSize = readoutWorker->GetNextDataBlockSize();  
-      daqWorker.debugStream() << "Next data block size is: " << blockSize;
+      daqWorker.debugStream() << "TakeData: Next data block size is: " << blockSize;
       std::tr1::shared_ptr<SequencerReadoutBlock> block = 
         readoutWorker->GetNextDataBlock( blockSize );
       if (declareEventsToET) {
+        daqWorker.debugStream() << "TakeData: DeclareDataBlock";
         DeclareDataBlock<SequencerReadoutBlock>( block.get() );
       }
       else {
@@ -311,10 +316,11 @@ void DAQWorker::TakeData()
       }
     } while ( readoutWorker->MoveToNextChannel() );
 
+    daqWorker.debugStream() << "TakeData: FinishGate";
     FinishGate();
     DeclareDAQHeaderToET();
   }
-
+  readoutWorker->InterruptResetToDefault();
   daqWorker.infoStream() << "Finished Data Acquisition...";
 }
 
@@ -324,17 +330,40 @@ bool DAQWorker::BeginNextGate()
 {
   daqWorker.debugStream() << "DAQWorker::BeginNextGate...";
   daqWorker.debugStream() << "Continue Running Status = " << (*status);
-  if (!(*status)) return false;
+  if (!(*status)) {
+      // readoutWorker->InterruptResetToDefault();
+      return false;
+  }
+
+  if (!stateRecorder->MoreGates()) {
+      return false;
+  }
 
   unsigned long long triggerTime = 0;
   readoutWorker->ResetCurrentChannel();
   Triggers::TriggerType triggerType = stateRecorder->GetNextTriggerType();
-  triggerTime = readoutWorker->Trigger( triggerType );
+  switch(stateRecorder->GetRunMode()) {
+    case Modes::Cosmics:
+    case Modes::MTBFBeamMuon:
+    case Modes::MTBFBeamOnly:
+      triggerTime = readoutWorker->TriggerCosmics( triggerType );
+      break;
+    case Modes::OneShot:
+    case Modes::NuMIBeam:
+    case Modes::PureLightInjection:
+    case Modes::MixedBeamPedestal:
+    case Modes::MixedBeamLightInjection:
+      triggerTime = readoutWorker->Trigger( triggerType );
+      break;
+    default:
+      daqWorker.errorStream() << "BeginNextGate: Unknown running mode.";
+  } /* end switch(stateRecorder->GetRunMode())*/
+  
   if (0 == triggerTime) return false; // We were interrupted during the CRIM wait.
   stateRecorder->SetGateStartTime( triggerTime );
 
   return stateRecorder->BeginNextGate();
-}
+} /* end DAQWorker::BeginNextGate() */
 
 //---------------------------------------------------------
 //! Set the finish time; Get the MINOSSGATE; Call the ReadoutStateRecorder.
@@ -404,6 +433,7 @@ template <class X> void DAQWorker::DeclareDataBlock( X *dataBlock )
 //---------------------------------------------------------
 template <class X> struct EventHandler * DAQWorker::CreateEventHandler( X *dataBlock )
 {
+  daqWorker.debugStream() << "CreateEventHandler: MaxTotalDataPerChain = "<< MinervaDAQSizes::MaxTotalDataPerChain;
   struct EventHandler * handler = (struct EventHandler *)malloc( sizeof(struct EventHandler) );
   assert( NULL != handler );
 
