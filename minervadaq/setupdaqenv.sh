@@ -16,7 +16,8 @@
 # 4. FNAL2 - SLF6 underground and test beam DAQ computers
 # 5. D0TESTSTAND - SLF6 DAQ development
 # 6. WHTESTSTAND - SLF5 DAQ and electronics development 
-# 7. Mx2 - MINERvA for 2x2 development
+# 7. LabF - Lab F Test Stand
+# 8. Mx2 - MINERvA for 2x2 development
 #
 
 if [ $# -eq 1 ]; then
@@ -162,7 +163,7 @@ echo Your DAQROOT is $DAQROOT
 echo Your CAEN_DIR is $CAEN_DIR
 if !([ -z "$BMS_HOME" ]); then
   echo Your BMS_HOME is $BMS_HOME
-fi
+fi #BMS not needed in locales that use later versions of ET
 echo Your ET INSTALL_DIR is $INSTALL_DIR
 echo Your ET_HOME is $ET_HOME
 echo Your ET_LIBROOT is $ET_LIBROOT
