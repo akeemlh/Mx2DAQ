@@ -127,7 +127,8 @@ elif [ $LOCALE == "WH14TESTSTAND" ]; then
   export PATH=$DAQROOT/sqlite/bin:$PATH
   # Add /usr/local/lib for log4cpp support.
   export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/lib
-elif [ $LOCALE == "Mx2" ]; then
+elif [ $LOCALE == "LabF" ]; then
+  #Locale for Lab F minerva test stand
   export DAQROOT=/root/minervadaq/minervadaq
   export CAEN_DIR=/root/minervadaq/minervadaq/CAENVMELib
   export CAEN_VERSION=CAEN_3_4_4
@@ -136,10 +137,20 @@ elif [ $LOCALE == "Mx2" ]; then
   export ET_HOME=${CODA_HOME}/build
   export ET_LIBROOT=$ET_HOME
   export INSTALL_DIR=$ET_HOME
-  # Add $ET_LIBROOT/lib & $CAEN_DIR/lib for ET & CAEN libraries.
-  export LD_LIBRARY_PATH=$DAQROOT/lib:$ET_LIBROOT:$CAEN_INSTALL:$LD_LIBRARY_PATH
-  # Add log4cpp support.
-  export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/lib #Replace /usr/local/lib with 
+  # Add $ET_LIBROOT/lib & $CAEN_DIR/lib for ET & CAEN libraries and log4cpp support
+  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DAQROOT/lib:$ET_LIBROOT:/usr/local/lib:$ET_LIBROOT/lib
+elif [ $LOCALE == "Mx2" ]; then
+  #Locale for MINERvA operations for 2x2
+  export DAQROOT=/root/minervadaq/minervadaq
+  export CAEN_DIR=/root/minervadaq/minervadaq/CAENVMELib
+  export CAEN_VERSION=CAEN_3_4_4
+  export CODA_VERSION=et_16.5
+  export CODA_HOME=${DAQROOT}/${CODA_VERSION}
+  export ET_HOME=${CODA_HOME}/build
+  export ET_LIBROOT=$ET_HOME
+  export INSTALL_DIR=$ET_HOME
+  # Add $ET_LIBROOT/lib & $CAEN_DIR/lib for ET & CAEN libraries and log4cpp support
+  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DAQROOT/lib:$ET_LIBROOT:/usr/local/lib:$ET_LIBROOT/lib
 else
   echo Unsupported LOCALE!$  LOCALE is not recognized in this script. 
 fi
