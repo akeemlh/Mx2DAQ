@@ -119,6 +119,7 @@ class CRIM : public VMECommunicator {
     /* Handle interrupts in Cosmics mode.  Ignore VME interrupts.
      */
     void InterruptInitialize();
+    void InterruptResetToDefault();
     void InterruptClear() const;
     void InterruptEnable() const;
     int InterruptWait( const sig_atomic_t * status ) const;

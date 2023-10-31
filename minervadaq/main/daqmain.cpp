@@ -53,6 +53,10 @@ int main( int argc, char * argv[] )
       if (worker->CloseDownET()) {
         daqmain.infoStream() << "Detached from ET station..."; 
       }
+      //SMEDLEY 3/9/2023
+      else {
+        daqmain.debugStream() << "DAQMain faield to detach from ET station...";
+      }
       worker->CleanupHardware();
     }
     catch (FHWException &e) {
@@ -105,6 +109,7 @@ void SetUpSigAction()
 //! Handle the SIGINT & SIGNUM signals (both of which should exit the process).
 void quitsignal_handler(int signum)
 {
+  daqmain.debugStream() << "Quit Signal Received!"; //SMEDLEY 3/9/2023
   continueRunning = false;
 }
 

@@ -90,17 +90,15 @@ void ReadoutWorker::InitializeCrates( Modes::RunningModes theRunningMode )
   switch(runningMode) {
     case Modes::OneShot:
     case Modes::NuMIBeam:
-      EnableIRQ();
-      break;
-    case Modes::Cosmics:
-      InterruptInitialize();
-      break;
     case Modes::PureLightInjection:
     case Modes::MixedBeamPedestal:
     case Modes::MixedBeamLightInjection:
+      EnableIRQ();
+      break;
+    case Modes::Cosmics:
     case Modes::MTBFBeamMuon:
     case Modes::MTBFBeamOnly:
-      EnableIRQ();
+      InterruptInitialize();
       break;
     default:
       readoutLogger.errorStream() << "InitializeCrates: Unknown running mode."<<runningMode;
@@ -327,10 +325,11 @@ unsigned int ReadoutWorker::GetNextDataBlockSize() const
 std::tr1::shared_ptr<SequencerReadoutBlock> ReadoutWorker::GetNextDataBlock( unsigned int blockSize ) const
 {
   if (currentChannel == readoutChannels.end()) {
-    readoutLogger.fatalStream() << "Attempting to read data from a NULL Channel!";
+    readoutLogger.fatalStream() << "GetNextDataBlock: Attempting to read data from a NULL Channel!";
     exit( EXIT_CROC_UNSPECIFIED_ERROR );
   }
-  readoutLogger.debugStream() << "Getting Data Block for " << (**currentChannel);
+  /* blockSize = 60000; */
+  readoutLogger.debugStream() << "GetNextDataBlock: Getting Data Block for " << (**currentChannel);
   std::tr1::shared_ptr<SequencerReadoutBlock> block(new SequencerReadoutBlock());
   block->SetData( (*currentChannel)->ReadMemory( blockSize ), blockSize );
   return block;
@@ -421,6 +420,11 @@ void ReadoutWorker::InterruptInitialize() {
 }
 
 //---------------------------
+void ReadoutWorker::InterruptResetToDefault() {
+  return this->MasterCRIM()->InterruptResetToDefault();
+}
+
+//---------------------------
 void ReadoutWorker::InterruptClear() const {
   return this->MasterCRIM()->InterruptClear();
 }
@@ -454,17 +458,11 @@ unsigned long long ReadoutWorker::TriggerCosmics( Triggers::TriggerType triggerT
 #endif
 
   InterruptEnable();
-  ResetCosmicLatch();  // Start CRIM sequencer
   InterruptClear();
+  ResetCosmicLatch();  // Start CRIM sequencer
 
   switch (triggerType) {
-    case Pedestal:
-    case ChargeInjection:
-    case LightInjection:
-      this->MasterCRIM()->SendSoftwareGate(); 
-      break;
     case Cosmic:
-    case NuMI:
     case MTBFMuon:
     case MTBFBeam:
       break;

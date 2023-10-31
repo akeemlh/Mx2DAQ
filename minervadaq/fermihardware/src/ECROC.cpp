@@ -148,6 +148,8 @@ void ECROC::InitializeRegisters( VMEModuleTypes::ECROCClockModes clockMode,
   // Turn off automatic RDFE for "cosmics" mode.
   switch (runningMode) {
     case Cosmics:
+    case MTBFBeamMuon:
+    case MTBFBeamOnly:
       SequencerDelayDisable();
       break;
     case OneShot:
@@ -155,8 +157,6 @@ void ECROC::InitializeRegisters( VMEModuleTypes::ECROCClockModes clockMode,
     case PureLightInjection:
     case MixedBeamPedestal:
     case MixedBeamLightInjection:
-    case MTBFBeamMuon:
-    case MTBFBeamOnly:
       SequencerDelayEnable();
       break;
     default:

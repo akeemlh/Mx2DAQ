@@ -82,6 +82,7 @@ Additions for running in "cosmics" mode.
     void ResetCosmicLatch () const;
 
     void InterruptInitialize();
+    void InterruptResetToDefault();
     void InterruptClear() const;
     void InterruptEnable() const;
     int InterruptWait() const;

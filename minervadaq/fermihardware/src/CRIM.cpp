@@ -64,10 +64,10 @@ CRIM::CRIM( unsigned int address, const Controller* controller,
   this->addressModifier = cvA24_U_DATA; 
   this->commType = VMEModuleTypes::CRIM;
 
-#ifndef GOFAST
-  CRIMLog.setPriority(log4cpp::Priority::DEBUG); 
-#else
+#ifdef GOFAST
   CRIMLog.setPriority(log4cpp::Priority::INFO); 
+#else
+  CRIMLog.setPriority(log4cpp::Priority::DEBUG); 
 #endif
   CRIMLog.debugStream() << "Creating CRIM with address = 0x" << std::hex 
     << this->address << "; IRQ Line = 0x" << this->irqLine 
@@ -126,6 +126,11 @@ void CRIM::Initialize( Modes::RunningModes runningMode )
       // "OneShot" for historical reasons no matter the clock mode.
 #if NOMTMPEDESTAL 
       TimingMode   = VMEModuleTypes::CRIMInternal;
+#endif
+#if MTEST
+      // Because no MTM is available at MTest, LI will use internal timing.
+      TimingMode   = VMEModuleTypes::CRIMInternal;
+      CRIMLog.infoStream() << "->Using CRIM internal timing.";
 #endif
       break;
     case NuMIBeam:
@@ -578,7 +583,7 @@ void CRIM::InterruptInitialize() {
 
     unsigned char message[] = {0,0};
     int error = WriteCycle( 2, message, interruptConfig, addressModifier, dataWidthReg );
-    if( error ) throwIfError( error, "Error setting interrupt configuration.");
+    if( error ) throwIfError( error, "InterruptInitialize: Error setting interrupt configuration.");
 
     message[0] = irqLine;
     message[1] = 0;
@@ -592,6 +597,31 @@ void CRIM::InterruptInitialize() {
 
 } /* end CRIM::InterruptInitialize() */
 
+
+void CRIM::InterruptResetToDefault() {
+    CRIMLog.infoStream() << "InterruptResetToDefault: Set interrupts for Numi (default) mode.";
+    irqLine  = VMEModuleTypes::SGATEFall;  // Input 0 = External trigger from input connector "T"
+    irqLevel = 5;  // VME interrupt request line - unused for cosmics
+
+    unsigned char message[] = {0,0};
+    message[0] = irqLevel;
+    message[1] = 0;
+    int error = WriteCycle( 2, message, interruptConfig, addressModifier, dataWidthReg );
+    if( error ) throwIfError( error, "InterruptResetToDefault: Error setting interrupt configuration.");
+
+    InterruptClear();
+
+    message[0] = irqLine;
+    message[1] = 0;
+    error = WriteCycle( 2, message, interruptAddress, addressModifier, dataWidthReg );
+    if( error ) throwIfError( error, "InterruptResetToDefault: Error setting interrupt mask.");
+
+#ifndef GOFAST
+    CRIMLog.infoStream() << "InterruptResetToDefault: InterruptShow()";
+    InterruptShow();
+#endif
+
+} /* end CRIM::InterruptResetToDefault() */
 
 void CRIM::InterruptClear() const {
     unsigned short resetInterrupts = 0x81;  // clear all pending interrupts
@@ -623,6 +653,7 @@ void CRIM::InterruptEnable() const {
 #endif
 
 } /* end CRIM::InterruptEnable() */
+
 
 int CRIM::InterruptWait( const sig_atomic_t * status ) const
 {
