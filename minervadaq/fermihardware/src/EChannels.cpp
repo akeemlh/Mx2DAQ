@@ -35,10 +35,10 @@ EChannels::EChannels( unsigned int vmeAddress, unsigned int number,
   VMECommunicator( vmeAddress, controller ),
   channelNumber(number)
 {
-#ifndef GOFAST
-  EChannelLog.setPriority(log4cpp::Priority::DEBUG);
-#else
+#ifdef GOFAST
   EChannelLog.setPriority(log4cpp::Priority::INFO);
+#else
+  EChannelLog.setPriority(log4cpp::Priority::DEBUG);
 #endif
 
   this->commType = VMEModuleTypes::EChannels;

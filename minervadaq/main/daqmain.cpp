@@ -40,8 +40,8 @@ int main( int argc, char * argv[] )
   SetUpSigAction();
 
   continueRunning = true;
-//  DAQWorker * worker = new DAQWorker( args, log4cpp::Priority::DEBUG, &continueRunning );
-  DAQWorker * worker = new DAQWorker( args, log4cpp::Priority::INFO, &continueRunning ); 
+  DAQWorker * worker = new DAQWorker( args, log4cpp::Priority::DEBUG, &continueRunning );
+  //DAQWorker * worker = new DAQWorker( args, log4cpp::Priority::INFO, &continueRunning ); 
 
   int error = 0;
   error = worker->SetUpET(); 
@@ -53,6 +53,10 @@ int main( int argc, char * argv[] )
       sentSentinel = worker->SendSentinel();
       if (worker->CloseDownET()) {
         daqmain.infoStream() << "Detached from ET station..."; 
+      }
+      //SMEDLEY 3/9/2023
+      else {
+        daqmain.debugStream() << "DAQMain faield to detach from ET station...";
       }
       worker->CleanupHardware();
     }
@@ -106,6 +110,7 @@ void SetUpSigAction()
 //! Handle the SIGINT & SIGNUM signals (both of which should exit the process).
 void quitsignal_handler(int signum)
 {
+  daqmain.debugStream() << "Quit Signal Received!"; //SMEDLEY 3/9/2023
   continueRunning = false;
 }
 
