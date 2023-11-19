@@ -323,7 +323,7 @@ void TRIPFrame::GetRegisterValue(int j, int &index, int bits)
 {
   int registerIndex = j; //the register being extracted
   long_m value = 0; //a temp to "build up" the register's value
-  unsigned char dataMask[1] = {0x01 << trip_function}; //the data mask bit for this trip function
+  unsigned char dataMask[1] = {static_cast<unsigned char>(0x01 << trip_function)}; //the data mask bit for this trip function
   unsigned char sysMask[1] = {0x03}; //another data mask 
 
   for (int i=0;i<bits;i++) { //loop to extract the message given the number of bits to extract

@@ -25,6 +25,8 @@ ECROC::ECROC(unsigned int address, const Controller* controller) :
   rdfePulseDelayAddress        = this->address + VMEModuleTypes::ECROCRdfePulseDelay;
   rdfePulseCommandAddress      = this->address + VMEModuleTypes::ECROCRdfePulseCommand;
 
+
+  //ECROCLog.setPriority(log4cpp::Priority::INFO); 
   ECROCLog.setPriority(log4cpp::Priority::DEBUG); 
 
   MakeChannels(); 
@@ -110,7 +112,7 @@ void ECROC::SetupTimingRegister( VMEModuleTypes::ECROCClockModes clockMode,
 #ifndef GOFAST
   ECROCLog.debugStream() << " Timing Register Message = 0x" << std::hex << timingRegisterMessage; 
 #endif
-  unsigned char command[] = { timingRegisterMessage & 0xFF, (timingRegisterMessage & 0xFF00)>>8 }; 
+  unsigned char command[] = { static_cast<unsigned char>(timingRegisterMessage & 0xFF), static_cast<unsigned char>((timingRegisterMessage & 0xFF00)>>8) }; 
 #ifndef GOFAST
   ECROCLog.debugStream() << " Timing Register Bytes   = 0x" << std::hex << (int)command[0] << ", 0x" << (int)command[1]; 
 #endif
@@ -126,7 +128,7 @@ void ECROC::SetupResetAndTestPulseRegister( unsigned short resetEnable, unsigned
 #ifndef GOFAST
   ECROCLog.debugStream() << " Reset and Test Pulse Register Message = 0x" << std::hex << resetAndTestPulseMaskRegisterMessage; 
 #endif
-  unsigned char command[] = { resetAndTestPulseMaskRegisterMessage & 0xFF, (resetAndTestPulseMaskRegisterMessage & 0xFF00)>>8 }; 
+  unsigned char command[] = { static_cast<unsigned char>(resetAndTestPulseMaskRegisterMessage & 0xFF), static_cast<unsigned char>((resetAndTestPulseMaskRegisterMessage & 0xFF00)>>8) }; 
 #ifndef GOFAST
   ECROCLog.debugStream() << " Reset and Test Pulse Register Bytes   = 0x" << std::hex << (int)command[0] << ", 0x" << (int)command[1]; 
 #endif
@@ -255,7 +257,7 @@ void ECROC::Initialize(Modes::RunningModes runningMode) const
   ECROCLog.infoStream() << "Initializing ECROC 0x" << std::hex << this->address;
   unsigned short testPulseDelayEnabled = 0;  // we do not use the test pulse delay in data-taking
   unsigned short testPulseDelayValue   = 0;
-  unsigned short sequencerDelayValue   = 511;   // x 2.4e-6 s
+  unsigned short sequencerDelayValue   = 1023;   // x 2.4e-6 s
   this->ClearAndResetStatusRegisters();
   this->EnableSequencerReadout();
   this->InitializeRegisters( (VMEModuleTypes::ECROCClockModes)VMEModuleTypes::ECROCExternal, 

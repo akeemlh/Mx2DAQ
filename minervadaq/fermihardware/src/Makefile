@@ -3,7 +3,7 @@
 CPPFLAGS  = -O3                 # all optimizations, combine with GOFAST
 #--DEBUG FLAGS--
 #COMPILE_OPTIONS += -DGOFAST           # comment this OUT to get full logging back
-COMPILE_OPTIONS += -D$(CAEN_VERSION)  # required to build on older SLF5 machines (safe for SLF6)
+COMPILE_OPTIONS += -D$(CAEN_VERSION)  # required to build on older SLF5 machines (safe for SLF6) No longer required for Mx2, left for legacy reasons
 
 #CPPFLAGS += -Werror -Wall -DLINUX -fPIC
 CPPFLAGS += -Wall -DLINUX -fPIC

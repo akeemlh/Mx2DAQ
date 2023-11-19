@@ -1,0 +1,3 @@
+[submodule "minervadaq/et_16.5"]
+	path = minervadaq/et_16.5
+	url = git@github.com:JeffersonLab/et.git

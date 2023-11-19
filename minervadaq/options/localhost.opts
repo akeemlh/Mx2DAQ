@@ -1,0 +1,8 @@
+#--DETECTOR FLAGS--
+#--USED WHEN TESTING FOR Mx2 LOCALLY--
+#--Currently usin the same options as the mnvonline machines, will change this when connected to Mx2 machines
+COMPILE_OPTIONS += -DNUMI
+#COMPILE_OPTIONS += -DDZERO
+#COMPILE_OPTIONS += -DWH14 # 14sxo 
+#COMPILE_OPTIONS += -DMTEST # 14sxo bottom crate
+#COMPILE_OPTIONS += -DNEARLINE # Nearline station 

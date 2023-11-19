@@ -528,10 +528,9 @@ void CRIM::AcknowledgeIRQ() const
   // is simply to poll the interrupt status register. This function is therefore unexercised
   // and untested and should be regarded with high suspicion!
   CRIMLog.debugStream() << "AcknowledgeIRQ...";
-  int error(0);
   try {
     unsigned short vec(0);
-    error = CAENVME_IACKCycle(this->GetController()->GetHandle(), (CVIRQLevels)this->irqLevel,
+    CAENVME_IACKCycle(this->GetController()->GetHandle(), (CVIRQLevels)this->irqLevel,
         &vec, this->GetController()->GetDataWidth());
     CRIMLog.debugStream() << " IRQ LEVEL: " << this->irqLevel << " VEC: " << vec;
     unsigned short interruptStatus = this->GetInterruptStatus();
